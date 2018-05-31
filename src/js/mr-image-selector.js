@@ -22,6 +22,7 @@ app.directive('mrImageSelector', function(){
         restrict: 'A',
         scope: {
             selector: '=?mrModel',
+            scale: '=mrScale',
             src: '=?mrSrc',
             aspectRatio: '=?mrAspectRatio'
         },
@@ -390,6 +391,14 @@ app.directive('mrImageSelector', function(){
                 unbindMoving();
             }
 
+            function upScaleValue(value) {
+                return Math.round(value / scope.scale);
+            };
+
+            function downScaleValue(value) {
+                return Math.round(value * scope.scale);
+            };
+
             function updateRect(position, width, height, apply) {
                 if (!position) {
                     return;
@@ -438,10 +447,10 @@ app.directive('mrImageSelector', function(){
 
                 selectorWatch();
 
-                selector.x1 = position.left;
-                selector.y1 = position.top;
-                selector.x2 = width - position.right;
-                selector.y2 = height - position.bottom;
+                selector.x1 = upScaleValue(position.left);
+                selector.y1 = upScaleValue(position.top);
+                selector.x2 = upScaleValue(width - position.right);
+                selector.y2 = upScaleValue(height - position.bottom);
 
                 selectorWatch = scope.$watch('selector', updateSelector, true);
             }
@@ -507,7 +516,7 @@ app.directive('mrImageSelector', function(){
                     console.error('[ERROR]: Selector position value (x1, x2, y1, y2) is not a valid number.');
                     return;
                 }
-                update(selector.x1, selector.y1, selector.x2, selector.y2);
+                update(downScaleValue(selector.x1), downScaleValue(selector.y1), downScaleValue(selector.x2), downScaleValue(selector.y2));
             }
 
             function updateSelectorEnabled(enabled) {
